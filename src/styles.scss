@@ -1,0 +1,211 @@
+/* =====================================================================
+   Southern Lanka Rentals — design tokens
+   Direction: a coastal working-harbour palette (lagoon teal + turmeric
+   gold) rather than the generic cream/terracotta travel-site default.
+   Signature element: an ink-stamp verified badge and a single hand-drawn
+   wave rule used once per page, echoing a passport stamp / tide line.
+   ===================================================================== */
+
+:root {
+  /* Color */
+  --color-bg: #F5F7F3;          /* soft seafoam white, not cream */
+  --color-surface: #FFFFFF;
+  --color-ink: #142420;          /* near-black with a teal undertone */
+  --color-ink-soft: #4B5A54;
+  --color-primary: #0B4F4A;      /* deep lagoon teal */
+  --color-primary-dark: #073531;
+  --color-primary-tint: #E7F0EE;
+  --color-accent: #E7A23C;       /* turmeric gold — CTAs, ratings, price */
+  --color-accent-deep: #C97F1E;
+  --color-clay: #C1543A;         /* muted clay — used sparingly for alerts only */
+  --color-line: #E1E6DF;
+  --color-success: #2F7A4F;
+  --color-success-tint: #E8F3EC;
+  --color-danger: #B23B24;
+  --color-danger-tint: #FBEAE5;
+
+  /* Type */
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
+  /* Scale */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 1px 2px rgba(20, 36, 32, 0.04), 0 8px 24px rgba(20, 36, 32, 0.07);
+  --shadow-float: 0 12px 40px rgba(7, 53, 49, 0.18);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  --container-max: 1200px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.1;
+  margin: 0 0 var(--space-3);
+  color: var(--color-primary-dark);
+  letter-spacing: -0.01em;
+}
+
+h1 { font-size: clamp(2.25rem, 4vw + 1rem, 3.75rem); font-weight: 500; }
+h2 { font-size: clamp(1.75rem, 2vw + 1rem, 2.5rem); }
+h3 { font-size: 1.375rem; }
+
+p { margin: 0 0 var(--space-3); color: var(--color-ink-soft); }
+
+a { color: inherit; text-decoration: none; }
+
+button, input, select { font-family: inherit; font-size: inherit; }
+
+.slr-container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--space-5);
+}
+
+/* Buttons */
+.slr-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-pill);
+  padding: 13px 26px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+.slr-btn:active { transform: scale(0.98); }
+
+.slr-btn--primary {
+  background: var(--color-primary);
+  color: #fff;
+}
+.slr-btn--primary:hover { background: var(--color-primary-dark); }
+
+.slr-btn--accent {
+  background: var(--color-accent);
+  color: var(--color-primary-dark);
+}
+.slr-btn--accent:hover { background: var(--color-accent-deep); }
+
+.slr-btn--ghost {
+  background: transparent;
+  border-color: var(--color-line);
+  color: var(--color-primary-dark);
+}
+.slr-btn--ghost:hover { background: var(--color-primary-tint); }
+
+.slr-btn--block { width: 100%; }
+.slr-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Cards */
+.slr-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+/* Badges */
+.slr-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.slr-badge--success { background: var(--color-success-tint); color: var(--color-success); }
+.slr-badge--accent { background: #FCF0DA; color: var(--color-accent-deep); }
+.slr-badge--danger { background: var(--color-danger-tint); color: var(--color-danger); }
+
+/* Signature: verified "ink stamp" badge — used on business profiles */
+.slr-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-style: italic;
+  font-size: 0.8rem;
+  color: var(--color-primary);
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius-pill);
+  padding: 3px 12px 3px 8px;
+  transform: rotate(-3deg);
+}
+
+/* Signature: single hand-drawn wave rule, used once per page as a section break */
+.slr-wave-rule {
+  display: block;
+  width: 100%;
+  height: 28px;
+  margin: 0;
+}
+
+/* Forms */
+.slr-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: var(--space-4);
+}
+.slr-field label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+}
+.slr-field input,
+.slr-field select,
+.slr-field textarea {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+.slr-field input:focus,
+.slr-field select:focus,
+.slr-field textarea:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+@media (max-width: 720px) {
+  .slr-container { padding: 0 var(--space-4); }
+}

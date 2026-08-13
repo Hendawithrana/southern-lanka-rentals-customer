@@ -1,0 +1,127 @@
+<section class="hero">
+  <div class="hero__media">
+    <img
+      src="https://images.unsplash.com/photo-1586861256632-52a3db359e70?q=80&w=2000"
+      alt="Southern Sri Lankan coastline with fishing boats and palm trees"
+      class="hero__img" />
+    <div class="hero__scrim"></div>
+  </div>
+
+  <div class="slr-container hero__content">
+    <span class="slr-badge slr-badge--accent hero__eyebrow">Southern Province · Sri Lanka</span>
+    <h1 class="hero__headline">Rent a bike or car<br />in Southern Sri Lanka</h1>
+    <p class="hero__subhead">
+      Compare trusted local rental businesses, check real availability, and book your vehicle online —
+      no surprises at pickup.
+    </p>
+  </div>
+
+  <div class="slr-container hero__search-dock">
+    <slr-search-widget />
+  </div>
+</section>
+
+<svg class="slr-wave-rule" viewBox="0 0 1200 28" preserveAspectRatio="none" aria-hidden="true">
+  <path d="M0 14 Q 100 0 200 14 T 400 14 T 600 14 T 800 14 T 1000 14 T 1200 14" fill="none" [attr.stroke]="'#0B4F4A'" stroke-width="2" opacity="0.15" />
+</svg>
+
+<section class="slr-container section">
+  <div class="section__head">
+    <h2>Popular locations</h2>
+    <p>From surf breaks to lagoon towns — pick your base on the coast.</p>
+  </div>
+  <div class="grid grid--locations">
+    @for (location of popularLocations(); track location.slug) {
+      <slr-location-card [location]="location" />
+    }
+  </div>
+</section>
+
+<section class="slr-container section">
+  <div class="section__head">
+    <h2>Popular vehicles</h2>
+    <p>A snapshot of what's available to book right now.</p>
+  </div>
+  <div class="grid grid--vehicles">
+    @for (vehicle of popularVehicles(); track vehicle.publicId) {
+      <slr-vehicle-card [vehicle]="vehicle" />
+    }
+  </div>
+</section>
+
+<section class="why-book">
+  <div class="slr-container">
+    <h2>Why book with us</h2>
+    <div class="why-book__grid">
+      <div class="why-book__item">
+        <span class="why-book__mark">✓</span>
+        <h3>Verified vendors</h3>
+        <p>We verify rental businesses before listing them.</p>
+      </div>
+      <div class="why-book__item">
+        <span class="why-book__mark">✓</span>
+        <h3>Transparent pricing</h3>
+        <p>See the complete booking cost before payment.</p>
+      </div>
+      <div class="why-book__item">
+        <span class="why-book__mark">✓</span>
+        <h3>Real availability</h3>
+        <p>Find vehicles available for your exact travel dates.</p>
+      </div>
+      <div class="why-book__item">
+        <span class="why-book__mark">✓</span>
+        <h3>Local support</h3>
+        <p>Get help from local rental partners.</p>
+      </div>
+      <div class="why-book__item">
+        <span class="why-book__mark">✓</span>
+        <h3>Easy booking</h3>
+        <p>Reserve your vehicle in just a few steps.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slr-container section">
+  <div class="section__head">
+    <h2>How it works</h2>
+  </div>
+  <div class="how-it-works">
+    <div class="how-it-works__step">
+      <span class="how-it-works__num">1</span>
+      <h3>Search</h3>
+      <p>Choose your location and rental dates.</p>
+    </div>
+    <div class="how-it-works__step">
+      <span class="how-it-works__num">2</span>
+      <h3>Compare</h3>
+      <p>Compare vehicles, prices, reviews and vendors.</p>
+    </div>
+    <div class="how-it-works__step">
+      <span class="how-it-works__num">3</span>
+      <h3>Book</h3>
+      <p>Pay the booking/service fee and receive confirmation.</p>
+    </div>
+  </div>
+</section>
+
+<section class="vendor-cta">
+  <div class="slr-container vendor-cta__inner">
+    <div>
+      <h2>Own a rental business?<br />List your vehicles for free</h2>
+      <p>
+        Reach tourists looking for bikes, scooters and cars across Southern Sri Lanka.
+        No registration fee. No monthly fee. No listing fee.
+      </p>
+      <ul class="vendor-cta__benefits">
+        <li>Free business profile</li>
+        <li>Free vehicle listings</li>
+        <li>Booking management</li>
+        <li>Availability calendar</li>
+        <li>Customer management</li>
+        <li>More tourist customers</li>
+      </ul>
+      <a [href]="vendorRegisterUrl" class="slr-btn slr-btn--accent">Register your business — free</a>
+    </div>
+  </div>
+</section>
