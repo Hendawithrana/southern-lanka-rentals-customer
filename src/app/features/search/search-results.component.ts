@@ -116,8 +116,10 @@ import { VehicleSearchParams } from '../../core/models/search.model';
     .search-page__checkbox { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 600; }
     .search-page__toolbar {
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
+      gap: var(--space-3);
       margin-bottom: var(--space-5);
       font-weight: 600;
       color: var(--color-ink-soft);
@@ -133,7 +135,12 @@ import { VehicleSearchParams } from '../../core/models/search.model';
 
     @media (max-width: 960px) {
       .search-page { grid-template-columns: 1fr; }
+      .search-page__filters { position: static; }
       .search-page__grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .search-page__grid { grid-template-columns: 1fr; }
     }
   `],
 })
@@ -174,9 +181,6 @@ export class SearchResultsComponent {
 
   private fetch(): void {
     this.loading.set(true);
-    if (!this.filters.deliveryOnly) {
-      this.filters.deliveryOnly = false;
-    }
     this.vehicleService.search(this.filters).subscribe({
       next: (result) => {
         this.results.set(result.content);

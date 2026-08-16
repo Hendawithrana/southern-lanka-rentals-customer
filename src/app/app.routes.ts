@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -39,6 +40,12 @@ export const routes: Routes = [
   {
     path: 'booking/confirmation/:bookingReference',
     loadComponent: () => import('./features/booking/booking-flow.component').then((m) => m.BookingFlowComponent),
+  },
+  {
+    path: 'bookings',
+    loadComponent: () => import('./features/bookings/my-bookings.component').then((m) => m.MyBookingsComponent),
+    canActivate: [authGuard],
+    title: 'My bookings — Southern Lanka Rentals',
   },
   {
     path: 'login',

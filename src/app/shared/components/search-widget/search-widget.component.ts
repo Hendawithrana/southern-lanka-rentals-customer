@@ -105,6 +105,11 @@ type RentalTab = 'BIKE' | 'CAR';
       .slr-search__fields { grid-template-columns: 1fr 1fr; }
       .slr-search__submit { grid-column: 1 / -1; }
     }
+
+    @media (max-width: 560px) {
+      .slr-search { padding: var(--space-4); }
+      .slr-search__fields { grid-template-columns: 1fr; }
+    }
   `],
 })
 export class SearchWidgetComponent {

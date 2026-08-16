@@ -12,12 +12,16 @@ export class BookingService {
     return this.http.post<Booking>(`${API_BASE_URL}/bookings`, req);
   }
 
+  listMine(): Observable<Booking[]> {
+    return this.http.get<Booking[]>(`${API_BASE_URL}/bookings`);
+  }
+
   getByPublicId(publicId: string): Observable<Booking> {
     return this.http.get<Booking>(`${API_BASE_URL}/bookings/${publicId}`);
   }
 
-  cancel(bookingId: number, reason?: string): Observable<Booking> {
-    return this.http.post<Booking>(`${API_BASE_URL}/bookings/${bookingId}/cancel`, null, {
+  cancel(publicId: string, reason?: string): Observable<Booking> {
+    return this.http.post<Booking>(`${API_BASE_URL}/bookings/${publicId}/cancel`, null, {
       params: reason ? { reason } : {},
     });
   }

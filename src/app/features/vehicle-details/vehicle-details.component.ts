@@ -76,11 +76,11 @@ import { VehicleDetail } from '../../core/models/vehicle.model';
 
             <div class="slr-field">
               <label for="pickup-date">Pickup date</label>
-              <input id="pickup-date" type="date" [(ngModel)]="pickupDate" />
+              <input id="pickup-date" type="date" [ngModel]="pickupDate()" (ngModelChange)="pickupDate.set($event)" />
             </div>
             <div class="slr-field">
               <label for="return-date">Return date</label>
-              <input id="return-date" type="date" [(ngModel)]="returnDate" />
+              <input id="return-date" type="date" [ngModel]="returnDate()" (ngModelChange)="returnDate.set($event)" />
             </div>
 
             @if (days() > 0) {
@@ -160,7 +160,6 @@ import { VehicleDetail } from '../../core/models/vehicle.model';
     @media (max-width: 960px) {
       .detail-page { grid-template-columns: 1fr; }
       .detail-page__booking { position: static; }
-      .detail-page__booking .booking-panel { display: none; }
       .sticky-cta {
         display: flex;
         position: sticky;
@@ -180,14 +179,16 @@ export class VehicleDetailsComponent {
   notFound = signal(false);
   activeImage = signal('');
 
-  pickupDate = '';
-  returnDate = '';
+  pickupDate = signal('');
+  returnDate = signal('');
 
   private serviceFeePct = 0.05; // client-side estimate only; the backend computes the authoritative fee at booking time
 
   days = computed(() => {
-    if (!this.pickupDate || !this.returnDate) return 0;
-    const ms = new Date(this.returnDate).getTime() - new Date(this.pickupDate).getTime();
+    const pickup = this.pickupDate();
+    const ret = this.returnDate();
+    if (!pickup || !ret) return 0;
+    const ms = new Date(ret).getTime() - new Date(pickup).getTime();
     return Math.max(0, Math.round(ms / (1000 * 60 * 60 * 24)));
   });
 
@@ -216,7 +217,7 @@ export class VehicleDetailsComponent {
     const v = this.vehicle();
     if (!v) return;
     this.router.navigate(['/booking', v.slug], {
-      queryParams: { pickupDate: this.pickupDate, returnDate: this.returnDate },
+      queryParams: { pickupDate: this.pickupDate(), returnDate: this.returnDate() },
     });
   }
 }

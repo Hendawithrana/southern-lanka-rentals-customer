@@ -102,3 +102,11 @@
   .how-it-works { grid-template-columns: 1fr; }
   .hero { min-height: auto; padding-bottom: 64px; }
 }
+
+@media (max-width: 640px) {
+  .grid--locations { grid-template-columns: 1fr; }
+  .grid--vehicles { grid-template-columns: 1fr; }
+  .vendor-cta__benefits { grid-template-columns: 1fr; }
+  .section { padding: var(--space-7) 0; }
+  .hero__content { padding-top: 64px; }
+}

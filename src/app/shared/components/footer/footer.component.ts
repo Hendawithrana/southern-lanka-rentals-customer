@@ -91,6 +91,12 @@ import { VENDOR_APP_URL } from '../../../core/services/app-links';
       .slr-footer__grid { grid-template-columns: 1fr 1fr; }
       .slr-footer__brand-col { grid-column: 1 / -1; }
     }
+
+    @media (max-width: 560px) {
+      .slr-footer__grid { grid-template-columns: 1fr; }
+      .slr-footer__bottom { flex-direction: column; align-items: flex-start; gap: var(--space-3); }
+      .slr-footer__contact { flex-wrap: wrap; gap: var(--space-4); }
+    }
   `],
 })
 export class FooterComponent {

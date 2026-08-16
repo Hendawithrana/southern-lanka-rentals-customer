@@ -12,7 +12,10 @@ export class VehicleService {
   search(params: VehicleSearchParams): Observable<PagedResult<VehicleSummary>> {
     let httpParams = new HttpParams();
     Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') {
+      // `false` is the "no filter" state for boolean params (e.g. deliveryOnly) -
+      // omit it rather than sending the literal string "false", which the API's
+      // strict boolean validation rejects.
+      if (value !== undefined && value !== null && value !== '' && value !== false) {
         httpParams = httpParams.set(key, String(value));
       }
     });

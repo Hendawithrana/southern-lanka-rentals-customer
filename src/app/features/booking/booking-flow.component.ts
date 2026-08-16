@@ -10,6 +10,19 @@ import { Booking } from '../../core/models/booking.model';
 import { Location } from '../../core/models/location.model';
 
 type Step = 'DETAILS' | 'CUSTOMER' | 'SUMMARY' | 'PAYMENT' | 'CONFIRMATION';
+type LicenseType = 'SRI_LANKAN' | 'INTERNATIONAL';
+
+// Sri Lankan driving licences (paper and smart-card) are conventionally a
+// single letter followed by 7-8 digits, e.g. "B1234567" - there's no public
+// DMT format spec to validate against exactly, so this covers the commonly
+// observed pattern rather than being a guaranteed-authoritative check.
+const SRI_LANKAN_LICENSE_PATTERN = /^[A-Za-z]\d{7,8}$/;
+
+// International Driving Permits are issued by many different national
+// automobile associations under the Geneva/Vienna conventions with no single
+// standard number format, so this is intentionally a lenient sanity check
+// rather than a strict format match.
+const INTERNATIONAL_LICENSE_PATTERN = /^[A-Za-z0-9]{5,20}$/;
 
 @Component({
   selector: 'slr-booking-flow',
@@ -43,21 +56,21 @@ type Step = 'DETAILS' | 'CUSTOMER' | 'SUMMARY' | 'PAYMENT' | 'CONFIRMATION';
                 <div class="booking-page__dates">
                   <div class="slr-field">
                     <label for="pickup-date">Pickup date</label>
-                    <input id="pickup-date" type="date" [(ngModel)]="pickupDate" />
+                    <input id="pickup-date" type="date" [ngModel]="pickupDate()" (ngModelChange)="pickupDate.set($event)" />
                   </div>
                   <div class="slr-field">
                     <label for="pickup-time">Pickup time</label>
-                    <input id="pickup-time" type="time" [(ngModel)]="pickupTime" />
+                    <input id="pickup-time" type="time" [ngModel]="pickupTime()" (ngModelChange)="pickupTime.set($event)" />
                   </div>
                 </div>
                 <div class="booking-page__dates">
                   <div class="slr-field">
                     <label for="return-date">Return date</label>
-                    <input id="return-date" type="date" [(ngModel)]="returnDate" />
+                    <input id="return-date" type="date" [ngModel]="returnDate()" (ngModelChange)="returnDate.set($event)" />
                   </div>
                   <div class="slr-field">
                     <label for="return-time">Return time</label>
-                    <input id="return-time" type="time" [(ngModel)]="returnTime" />
+                    <input id="return-time" type="time" [ngModel]="returnTime()" (ngModelChange)="returnTime.set($event)" />
                   </div>
                 </div>
                 <button class="slr-btn slr-btn--primary slr-btn--block" [disabled]="days() <= 0" (click)="step.set('CUSTOMER')">
@@ -84,8 +97,28 @@ type Step = 'DETAILS' | 'CUSTOMER' | 'SUMMARY' | 'PAYMENT' | 'CONFIRMATION';
                   <input id="country" type="text" [(ngModel)]="customer.country" />
                 </div>
                 <div class="slr-field">
-                  <label for="license">Driving licence reference (if required)</label>
-                  <input id="license" type="text" [(ngModel)]="customer.licenseReference" />
+                  <label for="license-type">Driving licence type</label>
+                  <select id="license-type" [(ngModel)]="licenseType">
+                    <option value="SRI_LANKAN">Sri Lankan driving licence</option>
+                    <option value="INTERNATIONAL">International driving permit</option>
+                  </select>
+                </div>
+                <div class="slr-field">
+                  <label for="license">Driving licence number</label>
+                  <input
+                    id="license"
+                    type="text"
+                    [(ngModel)]="customer.licenseReference"
+                    [placeholder]="licenseType === 'SRI_LANKAN' ? 'e.g. B1234567' : 'e.g. UK12345678AB9CD'" />
+                  @if (customer.licenseReference && !licenseValid()) {
+                    <p class="field-error">
+                      @if (licenseType === 'SRI_LANKAN') {
+                        Enter a valid Sri Lankan licence number — a letter followed by 7–8 digits (e.g. B1234567).
+                      } @else {
+                        Enter a valid international licence/permit number (5–20 letters and digits).
+                      }
+                    </p>
+                  }
                 </div>
                 <div class="booking-page__actions">
                   <button class="slr-btn slr-btn--ghost" (click)="step.set('DETAILS')">Back</button>
@@ -99,8 +132,8 @@ type Step = 'DETAILS' | 'CUSTOMER' | 'SUMMARY' | 'PAYMENT' | 'CONFIRMATION';
                 <h2>Review your booking</h2>
                 <dl class="summary-list">
                   <div><dt>Vehicle</dt><dd>{{ v.name }}</dd></div>
-                  <div><dt>Pickup</dt><dd>{{ pickupDate }} at {{ pickupTime }}</dd></div>
-                  <div><dt>Return</dt><dd>{{ returnDate }} at {{ returnTime }}</dd></div>
+                  <div><dt>Pickup</dt><dd>{{ pickupDate() }} at {{ pickupTime() }}</dd></div>
+                  <div><dt>Return</dt><dd>{{ returnDate() }} at {{ returnTime() }}</dd></div>
                   <div><dt>Name</dt><dd>{{ customer.fullName }}</dd></div>
                   <div><dt>Email</dt><dd>{{ customer.email }}</dd></div>
                   <div><dt>Phone</dt><dd>{{ customer.phone }}</dd></div>
@@ -176,15 +209,28 @@ type Step = 'DETAILS' | 'CUSTOMER' | 'SUMMARY' | 'PAYMENT' | 'CONFIRMATION';
   `,
   styles: [`
     .booking-page { padding: var(--space-6) 0 var(--space-8); }
-    .stepper { display: flex; gap: var(--space-5); list-style: none; padding: 0; margin: 0 0 var(--space-6); font-size: 0.85rem; font-weight: 600; color: var(--color-ink-soft); }
+    .stepper {
+      display: flex;
+      gap: var(--space-5);
+      list-style: none;
+      padding: 0;
+      margin: 0 0 var(--space-6);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-ink-soft);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .stepper__step { flex-shrink: 0; }
     .stepper__step--active { color: var(--color-primary); }
     .booking-page__grid { display: grid; grid-template-columns: 1fr 320px; gap: var(--space-6); align-items: start; }
     .booking-page__form { padding: var(--space-6); }
     .booking-page__vehicle-name { color: var(--color-ink-soft); margin-bottom: var(--space-4); }
     .booking-page__dates { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
-    .booking-page__actions { display: flex; justify-content: space-between; gap: var(--space-3); margin-top: var(--space-3); }
+    .booking-page__actions { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-3); margin-top: var(--space-3); }
     .booking-page__note { font-size: 0.8rem; color: var(--color-ink-soft); }
     .booking-page__error { color: var(--color-danger); font-size: 0.88rem; margin-top: var(--space-3); }
+    .field-error { color: var(--color-danger); font-size: 0.8rem; margin: -2px 0 0; }
 
     .summary-list { display: flex; flex-direction: column; gap: 10px; margin: var(--space-4) 0; }
     .summary-list div { display: flex; justify-content: space-between; font-size: 0.9rem; }
@@ -201,6 +247,11 @@ type Step = 'DETAILS' | 'CUSTOMER' | 'SUMMARY' | 'PAYMENT' | 'CONFIRMATION';
     @media (max-width: 860px) {
       .booking-page__grid { grid-template-columns: 1fr; }
     }
+
+    @media (max-width: 480px) {
+      .booking-page__form { padding: var(--space-4); }
+      .booking-page__dates { grid-template-columns: 1fr; }
+    }
   `],
 })
 export class BookingFlowComponent {
@@ -212,18 +263,21 @@ export class BookingFlowComponent {
   createdBooking = signal<Booking | null>(null);
 
   pickupLocationId: number | null = null;
-  pickupDate = '';
-  pickupTime = '10:00';
-  returnDate = '';
-  returnTime = '10:00';
+  pickupDate = signal('');
+  pickupTime = signal('10:00');
+  returnDate = signal('');
+  returnTime = signal('10:00');
 
   customer = { fullName: '', email: '', phone: '', country: '', licenseReference: '' };
+  licenseType: LicenseType = 'SRI_LANKAN';
 
   private serviceFeePct = 0.05;
 
   days = computed(() => {
-    if (!this.pickupDate || !this.returnDate) return 0;
-    const ms = new Date(this.returnDate).getTime() - new Date(this.pickupDate).getTime();
+    const pickup = this.pickupDate();
+    const ret = this.returnDate();
+    if (!pickup || !ret) return 0;
+    const ms = new Date(ret).getTime() - new Date(pickup).getTime();
     return Math.max(0, Math.round(ms / (1000 * 60 * 60 * 24)));
   });
 
@@ -238,8 +292,8 @@ export class BookingFlowComponent {
     private locationService: LocationService,
   ) {
     const slug = this.route.snapshot.paramMap.get('vehicleSlug');
-    this.pickupDate = this.route.snapshot.queryParamMap.get('pickupDate') ?? '';
-    this.returnDate = this.route.snapshot.queryParamMap.get('returnDate') ?? '';
+    this.pickupDate.set(this.route.snapshot.queryParamMap.get('pickupDate') ?? '');
+    this.returnDate.set(this.route.snapshot.queryParamMap.get('returnDate') ?? '');
 
     if (slug) {
       this.vehicleService.getBySlug(slug).subscribe({ next: (v) => this.vehicle.set(v) });
@@ -247,8 +301,15 @@ export class BookingFlowComponent {
     this.locationService.listActive().subscribe({ next: (locs) => this.locations.set(locs) });
   }
 
+  licenseValid(): boolean {
+    const value = this.customer.licenseReference.trim();
+    if (!value) return false;
+    const pattern = this.licenseType === 'SRI_LANKAN' ? SRI_LANKAN_LICENSE_PATTERN : INTERNATIONAL_LICENSE_PATTERN;
+    return pattern.test(value);
+  }
+
   customerValid(): boolean {
-    return !!(this.customer.fullName && this.customer.email && this.customer.phone);
+    return !!(this.customer.fullName && this.customer.email && this.customer.phone) && this.licenseValid();
   }
 
   submitBooking(): void {
@@ -260,10 +321,10 @@ export class BookingFlowComponent {
 
     this.bookingService
       .create({
-        vehicleId: Number(v.publicId), // NOTE: backend expects internal Long id - resolve via a lookup-by-slug
+        vehicleSlug: v.slug,
         pickupLocationId: this.pickupLocationId!,
-        pickupAt: `${this.pickupDate}T${this.pickupTime}:00`,
-        returnAt: `${this.returnDate}T${this.returnTime}:00`,
+        pickupAt: `${this.pickupDate()}T${this.pickupTime()}:00`,
+        returnAt: `${this.returnDate()}T${this.returnTime()}:00`,
         customerFullName: this.customer.fullName,
         customerEmail: this.customer.email,
         customerPhone: this.customer.phone,

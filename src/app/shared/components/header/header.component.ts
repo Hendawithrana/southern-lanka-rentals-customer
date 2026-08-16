@@ -12,21 +12,24 @@ import { VENDOR_APP_URL } from '../../../core/services/app-links';
       <div class="slr-container slr-header__inner">
         <a routerLink="/" class="slr-header__brand">
           <span class="slr-header__mark">SL</span>
-          <span>Southern Lanka Rentals</span>
+          <span class="slr-header__brand-text">Southern Lanka Rentals</span>
         </a>
 
         <nav class="slr-header__nav">
           <a routerLink="/rentals/search">Browse rentals</a>
+          @if (auth.isAuthenticated()) {
+            <a routerLink="/bookings">My bookings</a>
+          }
           <a [href]="vendorAppUrl + '/register'" class="slr-header__vendor-link">List your business — free</a>
         </nav>
 
         <div class="slr-header__actions">
           @if (auth.isAuthenticated()) {
             <span class="slr-header__hello">Hi, {{ auth.fullName() }}</span>
-            <button class="slr-btn slr-btn--ghost" (click)="auth.logout()">Log out</button>
+            <button class="slr-btn slr-btn--ghost slr-header__btn" (click)="auth.logout()">Log out</button>
           } @else {
-            <a routerLink="/login" class="slr-btn slr-btn--ghost">Log in</a>
-            <a routerLink="/register" class="slr-btn slr-btn--primary">Sign up</a>
+            <a routerLink="/login" class="slr-btn slr-btn--ghost slr-header__btn">Log in</a>
+            <a routerLink="/register" class="slr-btn slr-btn--primary slr-header__btn">Sign up</a>
           }
         </div>
       </div>
@@ -83,10 +86,26 @@ import { VENDOR_APP_URL } from '../../../core/services/app-links';
       gap: var(--space-3);
       white-space: nowrap;
     }
-    .slr-header__hello { font-weight: 600; font-size: 0.9rem; margin-right: var(--space-2); }
+    .slr-header__hello {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-right: var(--space-2);
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 
     @media (max-width: 860px) {
       .slr-header__nav { display: none; }
+    }
+
+    @media (max-width: 480px) {
+      .slr-header__inner { height: 64px; gap: var(--space-3); }
+      .slr-header__brand-text { display: none; }
+      .slr-header__actions { gap: var(--space-2); }
+      .slr-header__btn { padding: 9px 14px; font-size: 0.82rem; }
+      .slr-header__hello { display: none; }
     }
   `],
 })

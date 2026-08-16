@@ -10,7 +10,7 @@ export type BookingStatus =
   | 'NO_SHOW';
 
 export interface CreateBookingRequest {
-  vehicleId: number;
+  vehicleSlug: string;
   pickupLocationId: number;
   pickupAt: string;
   returnAt: string;
@@ -26,6 +26,7 @@ export interface Booking {
   publicId: string;
   bookingReference: string;
   status: BookingStatus;
+  vehicleSlug: string;
   vehicleName: string;
   businessName: string;
   pickupLocationName: string;

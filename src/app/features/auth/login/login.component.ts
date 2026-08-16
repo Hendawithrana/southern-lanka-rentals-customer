@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { VENDOR_APP_URL } from '../../../core/services/app-links';
 
@@ -54,7 +54,7 @@ export class LoginComponent {
   error = signal<string | null>(null);
   vendorAppUrl = VENDOR_APP_URL;
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(private auth: AuthService, private router: Router, private route: ActivatedRoute) {}
 
   submit(): void {
     this.loading.set(true);
@@ -70,7 +70,8 @@ export class LoginComponent {
           window.location.href = `${this.vendorAppUrl}/login`;
           return;
         }
-        this.router.navigate(['/']);
+        const redirectTo = this.route.snapshot.queryParamMap.get('redirectTo');
+        this.router.navigateByUrl(redirectTo || '/');
       },
       error: () => {
         this.loading.set(false);
